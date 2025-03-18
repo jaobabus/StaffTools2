@@ -1,0 +1,39 @@
+name: StaffTolls
+version: '1.0-SNAPSHOT'
+main: fun.jaba.stafftolls.StaffTolls
+depend: [WorldGuard]
+api-version: '1.20'
+
+commands:
+  back:
+    description: Teleport to previous location
+    usage: "/back [index: int]"
+    permission: stafftools.back
+  speed:
+    description: Change speed of player
+    usage: "/speed <speed: float = 0..10> [nick] [mode: {fly/walk}]"
+    permission: stafftools.speed
+  fly:
+    description: Set fly state
+    usage: "/fly [nick] [enable/disable]"
+    permission: stafftools.fly
+  feed:
+    description: Feed player
+    usage: "/feed [nick]"
+    permission: stafftools.feed
+  heal:
+    description: Heal player
+    usage: "/heal [nick]"
+    permission: stafftools.heal
+  nv:
+    description: Give night vision effect
+    usage: "/nv [nick]"
+    permission: stafftools.nv
+  gm:
+    description: Give night vision effect
+    usage: "/gm <mode: 0..3> [nick]"
+    permission: stafftools.gm
+  bungee-send:
+    description: Send raw command to bungeecord
+    usage: "/bungee-send <command> <argument>"
+    permission: stafftools.bungee-send

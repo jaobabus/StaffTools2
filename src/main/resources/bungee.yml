@@ -1,0 +1,3 @@
+name: BungeeStaffTools
+version: '${project.version}'
+main: fun.jaobabus.bungeestafftools.BungeeStaffTools
