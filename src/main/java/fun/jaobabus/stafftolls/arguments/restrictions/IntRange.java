@@ -8,6 +8,7 @@ import fun.jaobabus.commandlib.util.AbstractExecutionContext;
 import java.util.List;
 
 
+
 public class IntRange extends AbstractRestrictionFactory.Parametrized<Long, IntRange.Arguments>
 {
     @Override
@@ -18,6 +19,11 @@ public class IntRange extends AbstractRestrictionFactory.Parametrized<Long, IntR
     @Override
     public AbstractArgumentRestriction<Long> execute(IntRange.Arguments input) {
         return new AbstractArgumentRestriction.Parametrized<>() {
+            @Override
+            public String getName() {
+                return "IntRange";
+            }
+
             @Override
             public boolean checkRestriction(Long value, AbstractExecutionContext context) {
                 return input.start <= value && value <= input.end;

@@ -26,24 +26,55 @@ configurations.all {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT") // Спигот API
+    implementation("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
 
     implementation("fun.jaobabus:commandlib:0.2.1-SNAPSHOT")
 
     // Дополнительные зависимости
-    compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
-    compileOnly("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT")
+    implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
+    implementation("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT")
+    implementation("org.yaml:snakeyaml:2.4")
+
+
+    implementation("com.google.guava:guava:32.1.2-jre")
+
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
 
 }
 
+tasks.jar {
+    archiveClassifier.set("plugin") // plugin.jar
+    dependsOn(tasks.shadowJar)
+}
+
+var mainClass = "fun.jaobabus.stafftolls.main.Main";
+
 // Шейдинг CommandLib внутрь плагина
 tasks.shadowJar {
-    archiveClassifier.set("")
+    archiveClassifier.set("full")
     configurations = listOf(project.configurations.runtimeClasspath.get())
+
     dependencies {
         include(dependency("fun.jaobabus:commandlib:0.2.1-SNAPSHOT"))
+        include(dependency("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT"))
+        include(dependency("com.sk89q.worldguard:worldguard-bukkit:7.0.9"))
+        include(dependency("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT"))
+        include(dependency("com.google.guava:guava:32.1.2-jre"))
+        include(dependency("org.yaml:snakeyaml:2.4"))
+    }
+
+    from(project.configurations.runtimeClasspath.get().filter {
+        it.name.contains("guava")
+    })
+
+    // relocate("org.bukkit", "fun.jaobabus.libs.bukkit")
+    // relocate("com.google.common", "fun.jaobabus.libs.guava")
+
+    manifest {
+        attributes(
+            "Main-Class" to mainClass
+        )
     }
 }
 

@@ -19,6 +19,11 @@ public class FloatRange extends AbstractRestrictionFactory.Parametrized<Double, 
     public AbstractArgumentRestriction<Double> execute(FloatRange.Arguments input) {
         return new AbstractArgumentRestriction.Parametrized<>() {
             @Override
+            public String getName() {
+                return "FloatRange";
+            }
+
+            @Override
             public boolean checkRestriction(Double value, AbstractExecutionContext context) {
                 return input.start <= value && value <= input.end;
             }

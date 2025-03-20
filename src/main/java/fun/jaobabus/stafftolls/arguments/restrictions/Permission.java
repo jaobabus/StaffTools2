@@ -23,6 +23,11 @@ public class Permission extends AbstractRestrictionFactory.Parametrized<Object, 
     public AbstractArgumentRestriction<Object> execute(Permission.Arguments input) {
         return new AbstractArgumentRestriction.Parametrized<>() {
             @Override
+            public String getName() {
+                return "Permission";
+            }
+
+            @Override
             public boolean checkRestriction(Object value, AbstractExecutionContext context) {
                 CommandSender target = (CommandSender)context.executor;
                 if (value instanceof Player)

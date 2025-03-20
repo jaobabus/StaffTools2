@@ -133,6 +133,4 @@ public final class StaffTolls extends JavaPlugin {
             return null;
         return cmd.tabComplete(args, getCommandContext(sender, command.getName()));
     }
-
-
 }
