@@ -52,6 +52,7 @@ public class Main
             main.run(args);
         } catch (ParseError e) {
             System.err.println(e);
+            System.exit(1);
         }
     }
 }

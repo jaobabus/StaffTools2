@@ -43,15 +43,10 @@ dependencies {
 
 }
 
-tasks.jar {
-    archiveClassifier.set("plugin") // plugin.jar
-    dependsOn(tasks.shadowJar)
-}
-
 var mainClass = "fun.jaobabus.stafftolls.main.Main";
 
 // Шейдинг CommandLib внутрь плагина
-tasks.shadowJar {
+var shadowJarFull = tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJarFull") {
     archiveClassifier.set("full")
     configurations = listOf(project.configurations.runtimeClasspath.get())
 
@@ -68,6 +63,8 @@ tasks.shadowJar {
         it.name.contains("guava")
     })
 
+    from(sourceSets.main.get().output)
+
     // relocate("org.bukkit", "fun.jaobabus.libs.bukkit")
     // relocate("com.google.common", "fun.jaobabus.libs.guava")
 
@@ -78,8 +75,35 @@ tasks.shadowJar {
     }
 }
 
+var configurePlugin = tasks.register<JavaExec>("runFullJar") {
+    dependsOn(shadowJarFull)
+
+    mainClass.set("-jar")
+
+    args = listOf(
+        "./build/libs/StaffTolls-1.2-SNAPSHOT-full.jar",
+        "yaml",
+        "./src/main/resources/plugin.yml"
+    )
+
+    isIgnoreExitValue = false
+}
+
+var shadowJarPlugin = tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJarPlugin") {
+    archiveClassifier.set("plugin") // plugin.jar
+    configurations = listOf(project.configurations.runtimeClasspath.get())
+
+    dependencies {
+        include(dependency("fun.jaobabus:commandlib:0.2.1-SNAPSHOT"))
+    }
+
+    from(sourceSets.main.get().output)
+
+    dependsOn(configurePlugin)
+}
+
 tasks.build {
-    dependsOn(tasks.shadowJar)
+    dependsOn(shadowJarPlugin)
 }
 
 publishing {
