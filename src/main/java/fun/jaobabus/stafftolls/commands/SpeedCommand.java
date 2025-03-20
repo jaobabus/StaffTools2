@@ -1,23 +1,33 @@
 package fun.jaobabus.stafftolls.commands;
 
-import fun.jaobabus.stafftolls.arguments.Argument;
-import fun.jaobabus.stafftolls.arguments.PlayerArgument;
-import fun.jaobabus.stafftolls.arguments.StringRange;
-import fun.jaobabus.stafftolls.arguments.FloatRange;
+import fun.jaobabus.commandlib.argument.Argument;
+import fun.jaobabus.commandlib.argument.ArgumentRestriction;
+import fun.jaobabus.commandlib.argument.arguments.ArgumentRegistry;
+import fun.jaobabus.commandlib.argument.restrictions.ArgumentRestrictionRegistry;
+import fun.jaobabus.commandlib.command.AbstractCommand;
+import fun.jaobabus.commandlib.util.AbstractMessage;
+import fun.jaobabus.stafftolls.context.CommandContext;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 
-public class SpeedCommand extends Command {
-    public SpeedCommand() {
-        super("speed", new Argument[] {
-                new FloatRange(-10.0f, 10.0f,
-                        "speed", "speed 0..10", "", true),
-                new PlayerArgument("player", "player to be set speed", "", true),
-                new StringRange(new String[] {"fly", "walk"},
-                        "mode", "mode to be apply", "", true),
-        });
+public class SpeedCommand extends AbstractCommand.Parametrized<SpeedCommand.Arguments, CommandContext> {
+    public SpeedCommand(ArgumentRegistry registry, ArgumentRestrictionRegistry restRegistry) {
+        super(registry, restRegistry);
+    }
+
+    public static class Arguments
+    {
+        @Argument(action = Argument.Action.Optional,
+                  defaultValue = "1")
+        public Double speed;
+
+        @Argument(action = Argument.Action.Optional)
+        public Player player;
+
+        @Argument(action = Argument.Action.Optional,
+                  defaultValue = "auto")
+        @ArgumentRestriction(restriction = "StringRange auto fly walk")
+        public String mode;
     }
 
     float translate(float value, boolean isFly) {
@@ -41,20 +51,23 @@ public class SpeedCommand extends Command {
     }
 
     @Override
-    public void execute(@NotNull Player player, @NotNull List<Argument.Parsed> args) {
-        float value = 1;
-        Boolean mode = null;
-        if (!args.isEmpty())
-            value = (float)args.get(0).value();
-        if (args.size() > 1)
-            player = (Player)args.get(1).value();
-        if (args.size() > 2)
-            mode = ((String)args.get(2).value()).equals("fly");
-        if (mode == null)
-            mode = player.isFlying();
+    public AbstractMessage execute(Arguments input, CommandContext context) {
+        Player player = input.player;
+        if (player == null) {
+            if (context.executor instanceof Player player1)
+                player = player1;
+            else
+                return AbstractMessage.fromString("Can't set speed for console");
+        }
+        boolean mode = false;
+        switch (input.mode) {
+            case "auto" -> mode = player.isFlying();
+            case "fly" -> mode = true;
+        }
         if (mode)
-            player.setFlySpeed(translate(value, mode));
+            player.setFlySpeed(translate(input.speed.floatValue(), mode));
         else
-            player.setWalkSpeed(translate(value, mode));
+            player.setWalkSpeed(translate(input.speed.floatValue(), mode));
+        return AbstractMessage.fromString("Set speed");
     }
 }

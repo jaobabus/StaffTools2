@@ -1,27 +1,30 @@
 package fun.jaobabus.stafftolls.commands;
 
-import fun.jaobabus.stafftolls.arguments.Argument;
-import fun.jaobabus.stafftolls.arguments.StringArgument;
-import fun.jaobabus.stafftolls.arguments.StringRange;
-import fun.jaobabus.stafftolls.utils.BungeeIO;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
+import fun.jaobabus.commandlib.argument.Argument;
+import fun.jaobabus.commandlib.argument.arguments.ArgumentRegistry;
+import fun.jaobabus.commandlib.argument.restrictions.ArgumentRestrictionRegistry;
+import fun.jaobabus.commandlib.command.AbstractCommand;
+import fun.jaobabus.commandlib.util.AbstractMessage;
+import fun.jaobabus.stafftolls.context.CommandContext;
 
-import java.util.List;
+public class BungeeSendCommand extends AbstractCommand.Parametrized<BungeeSendCommand.Arguments, CommandContext>
+{
+    public BungeeSendCommand(ArgumentRegistry registry, ArgumentRestrictionRegistry restRegistry) {
+        super(registry, restRegistry);
+    }
 
-public class BungeeSendCommand extends Command {
-    private final BungeeIO bungeeIO;
+    public static class Arguments
+    {
+        @Argument
+        public String command;
 
-    public BungeeSendCommand(BungeeIO bungeeIO) {
-        super("bungee-send", new Argument[] {
-                new StringRange(new String[] { "player-move-server" }, "command", "command to be sent", "", false),
-                new StringArgument("argument", "may be delimited by ':'", "", false)
-        });
-        this.bungeeIO = bungeeIO;
+        @Argument
+        public String data;
     }
 
     @Override
-    public void execute(@NotNull Player player, @NotNull List<Argument.Parsed> args) {
-        bungeeIO.send((String)args.get(0).value(), (String)args.get(1).value());
+    public AbstractMessage execute(Arguments input, CommandContext context) {
+        context.plugin.bungeeIO.send(input.command, input.data);
+        return AbstractMessage.fromString("Sent");
     }
 }

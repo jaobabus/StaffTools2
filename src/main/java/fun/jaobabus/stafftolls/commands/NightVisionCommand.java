@@ -1,26 +1,23 @@
 package fun.jaobabus.stafftolls.commands;
 
 import fun.jaobabus.commandlib.argument.Argument;
-import fun.jaobabus.commandlib.argument.ArgumentRestriction;
 import fun.jaobabus.commandlib.argument.arguments.ArgumentRegistry;
 import fun.jaobabus.commandlib.argument.restrictions.ArgumentRestrictionRegistry;
 import fun.jaobabus.commandlib.command.AbstractCommand;
 import fun.jaobabus.commandlib.util.AbstractMessage;
 import fun.jaobabus.stafftolls.context.CommandContext;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
-public class FlyCommand extends AbstractCommand.Parametrized<FlyCommand.Arguments, CommandContext> {
-    public FlyCommand(ArgumentRegistry registry, ArgumentRestrictionRegistry restRegistry) {
+public class NightVisionCommand extends AbstractCommand.Parametrized<NightVisionCommand.Arguments, CommandContext> {
+    public NightVisionCommand(ArgumentRegistry registry, ArgumentRestrictionRegistry restRegistry) {
         super(registry, restRegistry);
     }
 
     public static class Arguments {
         @Argument(action = Argument.Action.Optional)
         public Player player;
-
-        @Argument(action = Argument.Action.Optional)
-        @ArgumentRestriction(restriction = "StringRange enable disable")
-        public String state;
     }
 
     @Override
@@ -30,17 +27,9 @@ public class FlyCommand extends AbstractCommand.Parametrized<FlyCommand.Argument
             if (context.executor instanceof Player player1)
                 player = player1;
             else
-                return AbstractMessage.fromString("Can't fly console");
+                return AbstractMessage.fromString("Can't nv console");
         }
-
-        Boolean state = input.state != null ? input.state.equals("enable") : null;
-
-        if (state == null) {
-            player.setAllowFlight(!player.getAllowFlight());
-        } else {
-            player.setAllowFlight(state);
-        }
-
-        return AbstractMessage.fromString("Flight mode " + (player.getAllowFlight() ? "enabled" : "disabled"));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, PotionEffect.INFINITE_DURATION, 1));
+        return AbstractMessage.fromString("You have been nv");
     }
 }

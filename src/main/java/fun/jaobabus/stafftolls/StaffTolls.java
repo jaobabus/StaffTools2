@@ -1,37 +1,42 @@
 package fun.jaobabus.stafftolls;
 
+import fun.jaobabus.commandlib.command.CommandBuilder;
+import fun.jaobabus.commandlib.util.ParseError;
+import fun.jaobabus.stafftolls.arguments.STRegistry;
 import fun.jaobabus.stafftolls.commands.AllCommands;
+import fun.jaobabus.stafftolls.context.CommandContext;
+import fun.jaobabus.stafftolls.context.PlayerContext;
 import fun.jaobabus.stafftolls.flags.WgFlagsPlugin;
 import fun.jaobabus.stafftolls.utils.BungeeIO;
 import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
-import java.util.List;
+import java.util.*;
 
 public final class StaffTolls extends JavaPlugin {
 
     static class CommonListener implements Listener {
-        private final AllCommands _commands;
         private final StaffTolls parent;
 
-        public CommonListener(StaffTolls parent, AllCommands cmd) {
+        public CommonListener(StaffTolls parent) {
             this.parent = parent;
-            _commands = cmd;
         }
 
         @EventHandler
         void onTeleport(PlayerTeleportEvent ev) {
-            _commands.playerTeleported(ev.getPlayer(), ev.getFrom(), ev.getTo());
+            var ctx = parent.getPlayerContext(ev.getPlayer());
+            ctx.back.locations.add(ev.getFrom());
+            if (ctx.back.locations.size() > ctx.back.maxLocationsCount)
+                ctx.back.locations.removeFirst();
         }
 
         @EventHandler(priority=EventPriority.MONITOR)
@@ -40,15 +45,53 @@ public final class StaffTolls extends JavaPlugin {
         }
     }
 
-    public AllCommands commands;
+    public Map<String, CommandContext> commandsContexts;
+    public Map<UUID, PlayerContext> playersContexts;
+    public Map<String, CommandBuilder.StandAloneCommand<CommandContext>> allCommands;
     @Getter
     public WgFlagsPlugin wgFlags;
     @Getter
     public BungeeIO bungeeIO;
 
+    public PlayerContext getPlayerContext(Player player)
+    {
+        return playersContexts.computeIfAbsent(player.getUniqueId(), k -> getNewPlayerContext(player));
+    }
+
+    private PlayerContext getNewPlayerContext(Player player)
+    {
+        return new PlayerContext();
+    }
+
+    private CommandContext getCommandContext(CommandSender sender, String command)
+    {
+        var ctx = commandsContexts.get(sender.getName());
+        if (ctx == null || !ctx.command.equals(command)) {
+            ctx = getNewCommandContext(sender, command);
+            commandsContexts.put(sender.getName(), ctx);
+        }
+        return ctx;
+    }
+
+    private CommandContext getNewCommandContext(CommandSender sender, String command)
+    {
+        var ctx = new CommandContext();
+        ctx.command = command;
+        ctx.executor = sender;
+        ctx.playerContext = (sender instanceof Player player ? getPlayerContext(player) : null);
+        ctx.plugin = this;
+        return ctx;
+    }
+
     @Override
     public void onLoad() {
-        if (getServer().spigot().getConfig().getConfigurationSection("settings").getBoolean("bungeecord")) {
+        commandsContexts = new HashMap<>();
+        playersContexts = new HashMap<>();
+        var builder = new CommandBuilder<CommandContext>(AllCommands.class);
+        builder.fillOriginalStream(STRegistry.getArgumentsRegistry(), STRegistry.getRestrictionsRegistry());
+        allCommands = builder.build();
+
+        if (Objects.requireNonNull(getServer().spigot().getConfig().getConfigurationSection("settings")).getBoolean("bungeecord")) {
             bungeeIO = new BungeeIO(this, getServer());
         }
         else {
@@ -59,8 +102,7 @@ public final class StaffTolls extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        commands = new AllCommands(bungeeIO);
-        getServer().getPluginManager().registerEvents(new CommonListener(this, commands), this);
+        getServer().getPluginManager().registerEvents(new CommonListener(this), this);
         getWgFlags().registerHandler();
     }
 
@@ -71,14 +113,25 @@ public final class StaffTolls extends JavaPlugin {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return commands.onCommand(sender, command, args);
+    public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, @NonNull String[] args) {
+        var cmd = allCommands.get(command.getName());
+        if (cmd == null)
+            return false;
+        try {
+            cmd.execute(args, getCommandContext(sender, command.getName()));
+        }
+        catch (ParseError e) {
+            sender.sendMessage(e.toString());
+        }
+        return true;
     }
 
     @Override
-    @Nullable
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        return commands.onTabComplete(sender, command, args);
+    public List<String> onTabComplete(@NonNull CommandSender sender, @NonNull Command command, @NonNull String alias, @NonNull String[] args) {
+        var cmd = allCommands.get(command.getName());
+        if (cmd == null)
+            return null;
+        return cmd.tabComplete(args, getCommandContext(sender, command.getName()));
     }
 
 

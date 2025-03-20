@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.ByteArrayDataOutput;
 
@@ -32,7 +32,7 @@ public class BungeeIO implements PluginMessageListener {
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull String s, @NotNull Player player, byte[] bytes) {
+    public void onPluginMessageReceived(@NonNull String s, @NonNull Player player, byte[] bytes) {
 
     }
 }

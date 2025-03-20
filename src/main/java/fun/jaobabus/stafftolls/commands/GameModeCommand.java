@@ -7,20 +7,30 @@ import fun.jaobabus.commandlib.argument.restrictions.ArgumentRestrictionRegistry
 import fun.jaobabus.commandlib.command.AbstractCommand;
 import fun.jaobabus.commandlib.util.AbstractMessage;
 import fun.jaobabus.stafftolls.context.CommandContext;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-public class FlyCommand extends AbstractCommand.Parametrized<FlyCommand.Arguments, CommandContext> {
-    public FlyCommand(ArgumentRegistry registry, ArgumentRestrictionRegistry restRegistry) {
+import java.util.HashMap;
+import java.util.Map;
+
+public class GameModeCommand extends AbstractCommand.Parametrized<GameModeCommand.Arguments, CommandContext> {
+    public GameModeCommand(ArgumentRegistry registry, ArgumentRestrictionRegistry restRegistry) {
         super(registry, restRegistry);
+        BY_ID.put(0, GameMode.SURVIVAL);
+        BY_ID.put(1, GameMode.CREATIVE);
+        BY_ID.put(2, GameMode.ADVENTURE);
+        BY_ID.put(3, GameMode.SPECTATOR);
     }
 
+    private static Map<Integer, GameMode> BY_ID = new HashMap<>();
+
     public static class Arguments {
-        @Argument(action = Argument.Action.Optional)
-        public Player player;
+        @Argument
+        @ArgumentRestriction(restriction = "IntRange 0 3")
+        public Long mode;
 
         @Argument(action = Argument.Action.Optional)
-        @ArgumentRestriction(restriction = "StringRange enable disable")
-        public String state;
+        public Player player;
     }
 
     @Override
@@ -30,17 +40,10 @@ public class FlyCommand extends AbstractCommand.Parametrized<FlyCommand.Argument
             if (context.executor instanceof Player player1)
                 player = player1;
             else
-                return AbstractMessage.fromString("Can't fly console");
+                return AbstractMessage.fromString("Can't set speed for console");
         }
-
-        Boolean state = input.state != null ? input.state.equals("enable") : null;
-
-        if (state == null) {
-            player.setAllowFlight(!player.getAllowFlight());
-        } else {
-            player.setAllowFlight(state);
-        }
-
-        return AbstractMessage.fromString("Flight mode " + (player.getAllowFlight() ? "enabled" : "disabled"));
+        GameMode gameMode = BY_ID.get(input.mode.intValue());
+        player.setGameMode(gameMode);
+        return AbstractMessage.fromString("Set game mode to " + gameMode.name().toLowerCase());
     }
 }

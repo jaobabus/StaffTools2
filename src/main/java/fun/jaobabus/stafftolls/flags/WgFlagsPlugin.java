@@ -9,7 +9,7 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.session.SessionManager;
 import fun.jaobabus.stafftolls.utils.BungeeIO;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 import java.util.logging.Logger;
 
@@ -56,7 +56,7 @@ public class WgFlagsPlugin {
         }
     }
 
-    void moveToServer(@NotNull LocalPlayer player, String server) {
+    void moveToServer(@NonNull LocalPlayer player, String server) {
         logger.info("Sending " + player.getName() + " to " + server);
         bungeeIO.send("player-move-server", player.getName() + ":" + server);
     }

@@ -1,26 +1,24 @@
 package fun.jaobabus.stafftolls.commands;
 
 import fun.jaobabus.commandlib.argument.Argument;
-import fun.jaobabus.commandlib.argument.ArgumentRestriction;
 import fun.jaobabus.commandlib.argument.arguments.ArgumentRegistry;
 import fun.jaobabus.commandlib.argument.restrictions.ArgumentRestrictionRegistry;
 import fun.jaobabus.commandlib.command.AbstractCommand;
 import fun.jaobabus.commandlib.util.AbstractMessage;
 import fun.jaobabus.stafftolls.context.CommandContext;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
-public class FlyCommand extends AbstractCommand.Parametrized<FlyCommand.Arguments, CommandContext> {
-    public FlyCommand(ArgumentRegistry registry, ArgumentRestrictionRegistry restRegistry) {
+import java.util.Objects;
+
+public class FeedCommand extends AbstractCommand.Parametrized<FeedCommand.Arguments, CommandContext> {
+    public FeedCommand(ArgumentRegistry registry, ArgumentRestrictionRegistry restRegistry) {
         super(registry, restRegistry);
     }
 
     public static class Arguments {
         @Argument(action = Argument.Action.Optional)
         public Player player;
-
-        @Argument(action = Argument.Action.Optional)
-        @ArgumentRestriction(restriction = "StringRange enable disable")
-        public String state;
     }
 
     @Override
@@ -30,17 +28,10 @@ public class FlyCommand extends AbstractCommand.Parametrized<FlyCommand.Argument
             if (context.executor instanceof Player player1)
                 player = player1;
             else
-                return AbstractMessage.fromString("Can't fly console");
+                return AbstractMessage.fromString("Can't feed console");
         }
-
-        Boolean state = input.state != null ? input.state.equals("enable") : null;
-
-        if (state == null) {
-            player.setAllowFlight(!player.getAllowFlight());
-        } else {
-            player.setAllowFlight(state);
-        }
-
-        return AbstractMessage.fromString("Flight mode " + (player.getAllowFlight() ? "enabled" : "disabled"));
+        player.setHealth(Objects.requireNonNull(player.getAttribute(Attribute.MAX_HEALTH)).getValue());
+        player.setFoodLevel(20);
+        return AbstractMessage.fromString("You have been fed");
     }
 }
