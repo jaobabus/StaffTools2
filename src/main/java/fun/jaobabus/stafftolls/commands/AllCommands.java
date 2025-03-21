@@ -44,4 +44,14 @@ public class AllCommands {
     @Command.Phrase(phrase = "Enable or disable flight for a player")
     @ArgumentRestriction(restriction = "Permission stafftools.fly")
     public FlyCommand fly;
+
+    @Command
+    @Command.Phrase(phrase = "Print help")
+    @ArgumentRestriction(restriction = "Permission stafftools.help")
+    public HelpCommand help;
+
+    @Command
+    @Command.Phrase(phrase = "Configure plugin config")
+    @ArgumentRestriction(restriction = "Permission stafftools.stconfig")
+    public ConfigCommand stconfig;
 }

@@ -7,8 +7,8 @@ import fun.jaobabus.commandlib.argument.restrictions.DefaultRestrictions;
 import fun.jaobabus.commandlib.command.CommandBuilder;
 import fun.jaobabus.commandlib.util.AbstractExecutionContext;
 import fun.jaobabus.commandlib.util.ParseError;
-import fun.jaobabus.stafftolls.arguments.STRegistry;
 import fun.jaobabus.stafftolls.main.arguments.FileArgument;
+import fun.jaobabus.stafftolls.main.commands.Commands;
 import fun.jaobabus.stafftolls.main.restrictions.FileIsRestriction;
 
 import java.util.Arrays;
@@ -41,7 +41,13 @@ public class Main
 
         var ctx = new AbstractExecutionContext();
         var cmdArgs = Arrays.stream(args).skip(1).toArray(String[]::new);
-        var msg = commands.get(args[0]).execute(cmdArgs, ctx);
+        var cmd = commands.get(args[0]);
+        if (cmd == null) {
+            System.err.println("Command " + args[0] + " not found!");
+            System.err.println("Available: " + String.join(", ", commands.keySet()));
+            System.exit(1);
+        }
+        var msg = cmd.execute(cmdArgs, ctx);
         System.out.println(msg.toString());
     }
 

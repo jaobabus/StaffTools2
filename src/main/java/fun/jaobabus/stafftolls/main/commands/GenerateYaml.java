@@ -1,4 +1,4 @@
-package fun.jaobabus.stafftolls.main;
+package fun.jaobabus.stafftolls.main.commands;
 
 import fun.jaobabus.commandlib.argument.Argument;
 import fun.jaobabus.commandlib.argument.ArgumentRestriction;
@@ -12,6 +12,7 @@ import fun.jaobabus.stafftolls.StaffTolls;
 import fun.jaobabus.stafftolls.arguments.STRegistry;
 import fun.jaobabus.stafftolls.commands.AllCommands;
 import fun.jaobabus.stafftolls.context.CommandContext;
+import fun.jaobabus.stafftolls.main.PluginYAMLGenerator;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 

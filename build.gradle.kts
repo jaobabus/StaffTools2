@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fun.jaobabus"
-version = "1.2-SNAPSHOT"
+version = "1.2.2-SNAPSHOT"
 
 java {
     toolchain {
@@ -19,6 +19,7 @@ repositories {
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("https://maven.enginehub.org/repo/")
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 configurations.all {
@@ -26,17 +27,27 @@ configurations.all {
 }
 
 dependencies {
-    implementation("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
+    // implementation("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
+    implementation("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    implementation("net.kyori:adventure-api:4.14.0")
+    implementation("net.kyori:examination-api:1.3.0")
 
     implementation("fun.jaobabus:commandlib:0.2.1-SNAPSHOT")
 
     // Дополнительные зависимости
-    implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.9")
+    implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.9") {
+        exclude (
+            group = "org.spigotmc",
+            module = "spigot-api"
+        )
+    }
+
     implementation("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT")
+
     implementation("org.yaml:snakeyaml:2.4")
 
-
     implementation("com.google.guava:guava:32.1.2-jre")
+    implementation("com.google.code.gson:gson:2.7")
 
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
@@ -54,13 +65,17 @@ var shadowJarFull = tasks.register<com.github.jengelman.gradle.plugins.shadow.ta
         include(dependency("fun.jaobabus:commandlib:0.2.1-SNAPSHOT"))
         include(dependency("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT"))
         include(dependency("com.sk89q.worldguard:worldguard-bukkit:7.0.9"))
-        include(dependency("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT"))
+        include(dependency("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"))
+        // include(dependency("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT"))
         include(dependency("com.google.guava:guava:32.1.2-jre"))
         include(dependency("org.yaml:snakeyaml:2.4"))
+        include(dependency("net.kyori:adventure-api"))
+        include(dependency("com.google.code.gson:gson:2.7"))
+        include(dependency("net.kyori:examination-api:1.3.0"))
     }
 
     from(project.configurations.runtimeClasspath.get().filter {
-        it.name.contains("guava")
+        it.name.contains("guava") || it.name.contains("gson")
     })
 
     from(sourceSets.main.get().output)
@@ -81,7 +96,7 @@ var configurePlugin = tasks.register<JavaExec>("runFullJar") {
     mainClass.set("-jar")
 
     args = listOf(
-        "./build/libs/StaffTolls-1.2-SNAPSHOT-full.jar",
+        "./build/libs/StaffTolls-$version-full.jar",
         "yaml",
         "./src/main/resources/plugin.yml"
     )
@@ -90,6 +105,8 @@ var configurePlugin = tasks.register<JavaExec>("runFullJar") {
 }
 
 var shadowJarPlugin = tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJarPlugin") {
+    dependsOn(configurePlugin)
+
     archiveClassifier.set("plugin") // plugin.jar
     configurations = listOf(project.configurations.runtimeClasspath.get())
 
@@ -98,8 +115,6 @@ var shadowJarPlugin = tasks.register<com.github.jengelman.gradle.plugins.shadow.
     }
 
     from(sourceSets.main.get().output)
-
-    dependsOn(configurePlugin)
 }
 
 tasks.build {
