@@ -24,6 +24,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -34,7 +36,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.util.*;
-import java.util.function.Consumer;
 
 public final class StaffTolls extends JavaPlugin {
 
@@ -142,6 +143,15 @@ public final class StaffTolls extends JavaPlugin {
         return help;
     }
 
+    boolean isBungeeEnabled() {
+        File file = new File(getServer().getPluginsFolder(), "../spigot.yml");
+        if (!file.exists()) return false;
+
+        YamlConfiguration spigot = YamlConfiguration.loadConfiguration(file);
+        ConfigurationSection settings = spigot.getConfigurationSection("settings");
+        return settings != null && settings.getBoolean("bungeecord", false);
+    }
+
     @Override
     public void onLoad() {
         rootConfig = new RootConfig();
@@ -159,7 +169,7 @@ public final class StaffTolls extends JavaPlugin {
         builder.fillOriginalStream(STRegistry.getArgumentsRegistry(), STRegistry.getRestrictionsRegistry());
         allCommands = builder.build();
 
-        if (Objects.requireNonNull(getServer().spigot().getConfig().getConfigurationSection("settings")).getBoolean("bungeecord")) {
+        if (isBungeeEnabled()) {
             bungeeIO = new BungeeIO(this, getServer());
         }
         else {
@@ -247,7 +257,7 @@ public final class StaffTolls extends JavaPlugin {
                     sender.sendMessage(line);
             }
             else
-                sender.sendMessage(msg.toJson());
+                sender.sendPlainMessage(msg.toString());
         }
         catch (ParseError e) {
             sender.sendMessage(e.toString());

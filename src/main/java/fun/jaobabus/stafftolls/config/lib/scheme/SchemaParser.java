@@ -5,6 +5,8 @@ import fun.jaobabus.commandlib.argument.AbstractArgumentRestriction;
 import fun.jaobabus.commandlib.argument.arguments.ArgumentRegistry;
 import fun.jaobabus.commandlib.argument.restrictions.AbstractRestrictionFactory;
 import fun.jaobabus.commandlib.argument.restrictions.ArgumentRestrictionRegistry;
+import fun.jaobabus.commandlib.context.BaseArgumentContext;
+import fun.jaobabus.commandlib.context.DummyArgumentContext;
 import fun.jaobabus.commandlib.util.AbstractExecutionContext;
 import fun.jaobabus.stafftolls.config.lib.ConfigVersion;
 import fun.jaobabus.stafftolls.config.lib.Renamed;
@@ -32,8 +34,8 @@ public class SchemaParser<T, EC extends AbstractExecutionContext> {
         this.executionContext = executionContext;
     }
 
-    public Map<String, ConfigEntryDescription<?, EC>> parse() {
-        Map<String, ConfigEntryDescription<?, EC>> entries = new LinkedHashMap<>();
+    public Map<String, ConfigEntryDescription<?, ?, EC>> parse() {
+        Map<String, ConfigEntryDescription<?, ?, EC>> entries = new LinkedHashMap<>();
         fetchVersion();
         walk("", rootClass, entries);
         for (var key : entries.keySet()) {
@@ -66,7 +68,7 @@ public class SchemaParser<T, EC extends AbstractExecutionContext> {
         version = ConfigVersion.fromString(ver.ver());
     }
 
-    private void walk(String prefix, Class<?> clazz, Map<String, ConfigEntryDescription<?, EC>> out) {
+    private void walk(String prefix, Class<?> clazz, Map<String, ConfigEntryDescription<?, ?, EC>> out) {
         for (Field field : clazz.getDeclaredFields()) {
             field.setAccessible(true);
             String name = field.getName();
@@ -88,16 +90,17 @@ public class SchemaParser<T, EC extends AbstractExecutionContext> {
         }
     }
 
-    private <AT> ConfigEntryDescription<AT, EC> parseField(Field field, String path)
+    private <AT>
+    ConfigEntryDescription<AT, BaseArgumentContext, EC> parseField(Field field, String path)
     {
         Class<AT> innerType = extractGeneric(field);
-        AbstractArgument<AT, EC> arg = argRegistry.getArgument(innerType);
+        AbstractArgument<AT, BaseArgumentContext> arg = argRegistry.getArgument(innerType);
         List<AbstractArgumentRestriction<AT>> restrictions = new ArrayList<>();
 
         Restricted[] restrictionsAnnotations = field.getAnnotationsByType(Restricted.class);
         for (Restricted restriction : restrictionsAnnotations) {
             AbstractArgumentRestriction<AT> rest = AbstractRestrictionFactory.execute(
-                    restriction.value(), argRegistry, restRegistry
+                    restriction.value(), "", argRegistry, restRegistry
             );
             restrictions.add(rest);
         }
@@ -106,7 +109,8 @@ public class SchemaParser<T, EC extends AbstractExecutionContext> {
             throw new IllegalArgumentException("Argument type for field '" + path + "': " + innerType + " not registered");
         }
 
-        ConfigEntryDescription<AT, EC> cfg = new ConfigEntryDescription<>(path, field, field.getAnnotations(), arg, executionContext, restrictions);
+        var argumentContext = new DummyArgumentContext();
+        ConfigEntryDescription<AT, BaseArgumentContext, EC> cfg = new ConfigEntryDescription<>(path, field, field.getAnnotations(), arg, argumentContext, executionContext, restrictions);
         cfg.validate(version);
         return cfg;
     }

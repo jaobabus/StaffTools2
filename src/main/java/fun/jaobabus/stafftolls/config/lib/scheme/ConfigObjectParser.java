@@ -14,10 +14,10 @@ import java.util.Map;
 
 public class ConfigObjectParser<T, EC extends AbstractExecutionContext> {
     private final T rootConfig;
-    private final Map<String, ConfigEntryDescription<?, EC>> schema;
+    private final Map<String, ConfigEntryDescription<?, ?, EC>> schema;
     private final ConfigVersion version;
 
-    public ConfigObjectParser(T rootConfig, Map<String, ConfigEntryDescription<?, EC>> schema, ConfigVersion version) {
+    public ConfigObjectParser(T rootConfig, Map<String, ConfigEntryDescription<?, ?, EC>> schema, ConfigVersion version) {
         this.rootConfig = rootConfig;
         this.schema = schema;
         this.version = version;
@@ -25,7 +25,7 @@ public class ConfigObjectParser<T, EC extends AbstractExecutionContext> {
 
     public void init() throws ParseError
     {
-        for (ConfigEntryDescription<?, ?> desc : schema.values()) {
+        for (ConfigEntryDescription<?, ?, ?> desc : schema.values()) {
             try {
                 Object target = desc.getTargetInstance(rootConfig);
                 if (target == null && ConfigValue.class.isAssignableFrom(desc.field().getType())) {
@@ -53,7 +53,7 @@ public class ConfigObjectParser<T, EC extends AbstractExecutionContext> {
         boolean success = true;
         for (var entry : schema.entrySet()) {
             String path = entry.getKey();
-            ConfigEntryDescription<?, EC> desc = entry.getValue();
+            ConfigEntryDescription<?, ?, EC> desc = entry.getValue();
 
             JsonElement value = getJsonAtPath(input, path);
             try {
@@ -85,7 +85,7 @@ public class ConfigObjectParser<T, EC extends AbstractExecutionContext> {
         out.add("version", new JsonPrimitive(version.toString()));
         for (var entry : schema.entrySet()) {
             String path = entry.getKey();
-            ConfigEntryDescription<?, ?> desc = entry.getValue();
+            ConfigEntryDescription<?, ?, ?> desc = entry.getValue();
             JsonElement val = desc.dump(rootConfig, version);
             setJsonAtPath(out, path, val);
         }

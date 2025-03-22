@@ -5,6 +5,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import fun.jaobabus.commandlib.argument.AbstractArgument;
 import fun.jaobabus.commandlib.argument.AbstractArgumentRestriction;
+import fun.jaobabus.commandlib.context.BaseArgumentContext;
 import fun.jaobabus.commandlib.util.AbstractExecutionContext;
 import fun.jaobabus.commandlib.util.ParseError;
 import fun.jaobabus.stafftolls.config.lib.*;
@@ -16,23 +17,32 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 
-public class ConfigEntryDescription<T, EC extends AbstractExecutionContext> {
+public class ConfigEntryDescription<T, AC extends BaseArgumentContext, EC extends AbstractExecutionContext> {
     private final String path;
     private final Field field;
     private final Annotation[] annotations;
-    private final AbstractArgument<T, EC> argumentParser;
+    private final AbstractArgument<T, AC> argumentParser;
+    private final AC argumentContext;
     private final EC executionContext;
     private final List<AbstractArgumentRestriction<T>> restrictions;
 
     @Setter
     private String renamedTo;
 
-    public ConfigEntryDescription(String path, Field field, Annotation[] annotations, AbstractArgument<T, EC> argumentParser, EC executionContext, List<AbstractArgumentRestriction<T>> restrictions) {
+    public ConfigEntryDescription(String path,
+                                  Field field,
+                                  Annotation[] annotations,
+                                  AbstractArgument<T, AC> argumentParser,
+                                  AC argumentContext,
+                                  EC executionContext,
+                                  List<AbstractArgumentRestriction<T>> restrictions)
+    {
         this.path = Objects.requireNonNull(path);
         this.field = Objects.requireNonNull(field);
         this.annotations = Objects.requireNonNull(annotations);
         this.argumentParser = Objects.requireNonNull(argumentParser);
         this.executionContext = Objects.requireNonNull(executionContext);
+        this.argumentContext = Objects.requireNonNull(argumentContext);
         this.restrictions = Objects.requireNonNull(restrictions);
     }
 
@@ -48,7 +58,7 @@ public class ConfigEntryDescription<T, EC extends AbstractExecutionContext> {
         return annotations;
     }
 
-    public AbstractArgument<T, EC> argument() {
+    public AbstractArgument<T, AC> argument() {
         return argumentParser;
     }
 
@@ -101,7 +111,7 @@ public class ConfigEntryDescription<T, EC extends AbstractExecutionContext> {
     }
 
     public T parseValue(String str) throws ParseError {
-        return argumentParser.parseSimple(str, executionContext);
+        return argumentParser.parseSimple(str, argumentContext);
     }
 
     public JsonElement dump(Object rootInstance, ConfigVersion currentVersion) throws Exception {
@@ -141,7 +151,7 @@ public class ConfigEntryDescription<T, EC extends AbstractExecutionContext> {
 
     public String dumpValue(T value)
     {
-        return argumentParser.dumpSimple(value, executionContext);
+        return argumentParser.dumpSimple(value, argumentContext);
     }
 
     public Object getTargetInstance(Object rootInstance)

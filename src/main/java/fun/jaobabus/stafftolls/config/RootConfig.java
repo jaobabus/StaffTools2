@@ -14,7 +14,7 @@ import java.util.Map;
 @Version(ver = "1.0")
 public class RootConfig
 {
-    public static Map<String, ConfigEntryDescription<?, AbstractExecutionContext>> schema;
+    public static Map<String, ConfigEntryDescription<?, ?, AbstractExecutionContext>> schema;
     public static ConfigVersion version;
     public static void initSchema(ArgumentRegistry args, ArgumentRestrictionRegistry rest)
     {

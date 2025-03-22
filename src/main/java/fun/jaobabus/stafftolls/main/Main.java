@@ -9,6 +9,7 @@ import fun.jaobabus.commandlib.util.AbstractExecutionContext;
 import fun.jaobabus.commandlib.util.ParseError;
 import fun.jaobabus.stafftolls.main.arguments.FileArgument;
 import fun.jaobabus.stafftolls.main.commands.Commands;
+import fun.jaobabus.stafftolls.main.commands.LatestCommand;
 import fun.jaobabus.stafftolls.main.restrictions.FileIsRestriction;
 
 import java.util.Arrays;
@@ -22,6 +23,8 @@ public class Main
         var registry = new ArgumentRegistry();
         registry.include(DefaultArguments.getDefaultArgumentsRegistry());
         registry.putArgument(new FileArgument());
+        registry.putArgument(new LatestCommand.PatternList());
+        registry.putArgument(new LatestCommand.TemplateFile());
         return registry;
     }
 
@@ -40,6 +43,7 @@ public class Main
         var commands = builder.build();
 
         var ctx = new AbstractExecutionContext();
+        ctx.setContextualValue("commands", commands);
         var cmdArgs = Arrays.stream(args).skip(1).toArray(String[]::new);
         var cmd = commands.get(args[0]);
         if (cmd == null) {
@@ -48,7 +52,7 @@ public class Main
             System.exit(1);
         }
         var msg = cmd.execute(cmdArgs, ctx);
-        System.out.println(msg.toString());
+        System.out.println((msg != null ? msg.toString() : null));
     }
 
     public static void main(String[] args)

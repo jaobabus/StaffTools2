@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fun.jaobabus"
-version = "1.2.2-SNAPSHOT"
+version = "1.2.A-SNAPSHOT"
 
 java {
     toolchain {
@@ -57,8 +57,8 @@ dependencies {
 var mainClass = "fun.jaobabus.stafftolls.main.Main";
 
 // Шейдинг CommandLib внутрь плагина
-var shadowJarFull = tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJarFull") {
-    archiveClassifier.set("full")
+var shadowJarCli = tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJarCli") {
+    archiveClassifier.set("cli")
     configurations = listOf(project.configurations.runtimeClasspath.get())
 
     dependencies {
@@ -90,15 +90,16 @@ var shadowJarFull = tasks.register<com.github.jengelman.gradle.plugins.shadow.ta
     }
 }
 
-var configurePlugin = tasks.register<JavaExec>("runFullJar") {
-    dependsOn(shadowJarFull)
+var configurePlugin = tasks.register<JavaExec>("configurePlugin") {
+    dependsOn(shadowJarCli)
 
     mainClass.set("-jar")
 
     args = listOf(
-        "./build/libs/StaffTolls-$version-full.jar",
-        "yaml",
-        "./src/main/resources/plugin.yml"
+        "./build/libs/StaffTolls-$version-cli.jar",
+        "chain",
+        "yaml ./src/main/resources/plugin.yml",
+        "latest -p:plugin -p:cli ./build/libs/StaffTolls-$version-{1}.jar ./build/libs/StaffTolls-latest-{1}.jar"
     )
 
     isIgnoreExitValue = false
@@ -117,16 +118,31 @@ var shadowJarPlugin = tasks.register<com.github.jengelman.gradle.plugins.shadow.
     from(sourceSets.main.get().output)
 }
 
+var latestPlugin = tasks.register<JavaExec>("latestPlugin") {
+    dependsOn(shadowJarCli)
+
+    mainClass.set("-jar")
+
+    args = listOf(
+        "./build/libs/StaffTolls-$version-cli.jar",
+        "chain",
+        "latest -p:plugin -p:cli ./build/libs/StaffTolls-$version-{1}.jar ./build/libs/StaffTolls-latest-{1}.jar"
+    )
+
+    isIgnoreExitValue = false
+}
+
 tasks.build {
-    dependsOn(shadowJarPlugin)
+    dependsOn(shadowJarPlugin, latestPlugin)
 }
 
 publishing {
     publications {
+        val verIncrement = 0;
         create<MavenPublication>("mavenJava") {
             groupId = "fun.jaobabus"
             artifactId = "stafftools"
-            version = "1.2-SNAPSHOT"
+            version = "1.2.$verIncrement-SNAPSHOT"
             from(components["java"])
         }
     }

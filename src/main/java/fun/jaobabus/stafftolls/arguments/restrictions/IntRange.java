@@ -17,11 +17,16 @@ public class IntRange extends AbstractRestrictionFactory.Parametrized<Long, IntR
     }
 
     @Override
-    public AbstractArgumentRestriction<Long> execute(IntRange.Arguments input) {
+    public AbstractArgumentRestriction<Long> execute(IntRange.Arguments input, String path) {
         return new AbstractArgumentRestriction.Parametrized<>() {
             @Override
             public String getName() {
                 return "IntRange";
+            }
+
+            @Override
+            public String getPath() {
+                return path;
             }
 
             @Override

@@ -20,11 +20,16 @@ public class Permission extends AbstractRestrictionFactory.Parametrized<Object, 
     }
 
     @Override
-    public AbstractArgumentRestriction<Object> execute(Permission.Arguments input) {
+    public AbstractArgumentRestriction<Object> execute(Permission.Arguments input, String path) {
         return new AbstractArgumentRestriction.Parametrized<>() {
             @Override
             public String getName() {
                 return "Permission";
+            }
+
+            @Override
+            public String getPath() {
+                return path;
             }
 
             @Override

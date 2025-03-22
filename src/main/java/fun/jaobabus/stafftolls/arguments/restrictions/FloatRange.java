@@ -16,11 +16,16 @@ public class FloatRange extends AbstractRestrictionFactory.Parametrized<Double, 
     }
 
     @Override
-    public AbstractArgumentRestriction<Double> execute(FloatRange.Arguments input) {
+    public AbstractArgumentRestriction<Double> execute(FloatRange.Arguments input, String path) {
         return new AbstractArgumentRestriction.Parametrized<>() {
             @Override
             public String getName() {
                 return "FloatRange";
+            }
+
+            @Override
+            public String getPath() {
+                return path;
             }
 
             @Override

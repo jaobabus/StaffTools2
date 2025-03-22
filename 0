@@ -1,0 +1,47 @@
+api-version: '1.21'
+depend:
+- WorldGuard
+name: StaffTolls
+main: fun.jaobabus.stafftolls.StaffTolls
+version: 1.2-SNAPSHOT
+commands:
+  feed:
+    default: op
+    usage: '/feed  [player: Player]'
+    description: Replenish player's hunger bar
+  bungeesend:
+    default: op
+    usage: '/bungeesend  <command: String> <data: String>'
+    description: Send a message or data to another BungeeCord server
+  help:
+    default: op
+    usage: '/help  '
+    description: Print help
+  fly:
+    default: op
+    usage: '/fly  [player: Player] [state: String]'
+    description: Enable or disable flight for a player
+  gm:
+    default: op
+    usage: '/gm  <mode: Long> [player: Player]'
+    description: Change player's game mode
+  heal:
+    default: op
+    usage: '/heal  [player: Player]'
+    description: Restore player's health to full
+  nv:
+    default: op
+    usage: '/nv  [player: Player]'
+    description: Toggle night vision effect for a player
+  back:
+    default: op
+    usage: '/back  <pos: BackPositionArgument$Position>'
+    description: Teleport to previous location
+  stconfig:
+    default: op
+    usage: '/stconfig  <path: ConfigEntryDescription> [value: ConfigEntryBinding$Value]'
+    description: Configure plugin config
+  speed:
+    default: op
+    usage: '/speed  [speed: Double = 1] [player: Player] [mode: String = auto]'
+    description: Adjust movement speed of a player

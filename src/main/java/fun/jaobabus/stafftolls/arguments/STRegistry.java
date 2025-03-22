@@ -17,8 +17,8 @@ public class STRegistry
         if (argumentsRegistry == null) {
             argumentsRegistry = new ArgumentRegistry();
             argumentsRegistry.include(DefaultArguments.getDefaultArgumentsRegistry());
-            argumentsRegistry.putArgument(new BackPositionArgument<>());
-            argumentsRegistry.putArgument(new OnlinePlayerArgument<>());
+            argumentsRegistry.putArgument(new BackPositionArgument());
+            argumentsRegistry.putArgument(new OnlinePlayerArgument());
             argumentsRegistry.putArgument(new ConfigEntryPath());
             argumentsRegistry.putArgument(new ConfigEntryBinding());
             argumentsRegistry.putArgument(new ColorArgument());

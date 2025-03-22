@@ -36,7 +36,7 @@ public class ConfigCommand
     public static class Arguments
     {
         @Argument
-        public ConfigEntryDescription<?, ?> path;
+        public ConfigEntryDescription<?, ?, ?> path;
 
         @Argument(action = Argument.Action.Optional)
         public ConfigEntryBinding.Value<?> value;

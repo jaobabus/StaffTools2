@@ -17,11 +17,15 @@ public class FileIsRestriction extends AbstractRestrictionFactory.Parametrized<F
     }
 
     @Override
-    public AbstractArgumentRestriction<File> execute(Arguments input) {
+    public AbstractArgumentRestriction<File> execute(Arguments input, String path) {
         return new AbstractArgumentRestriction.Parametrized<>() {
             @Override
             public String getName() {
                 return "FileIs";
+            }
+            @Override
+            public String getPath() {
+                return path;
             }
 
             @Override
@@ -42,7 +46,7 @@ public class FileIsRestriction extends AbstractRestrictionFactory.Parametrized<F
 
             @Override
             public String formatRestriction(File argument, AbstractExecutionContext context) {
-                return "[" + String.join(", ", input.options) + "]:" + argument.getName();
+                return "[" + String.join(", ", input.options) + "]:" + argument.getPath();
             }
 
             @Override

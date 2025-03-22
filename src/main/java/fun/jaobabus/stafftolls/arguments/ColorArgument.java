@@ -1,6 +1,7 @@
 package fun.jaobabus.stafftolls.arguments;
 
 import fun.jaobabus.commandlib.argument.AbstractArgument;
+import fun.jaobabus.commandlib.context.DummyArgumentContext;
 import fun.jaobabus.commandlib.util.AbstractExecutionContext;
 import fun.jaobabus.commandlib.util.AbstractMessage;
 import fun.jaobabus.commandlib.util.ParseError;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class ColorArgument
-    extends AbstractArgument.Parametrized<TextColor, AbstractExecutionContext>
+    extends AbstractArgument.Parametrized<TextColor, DummyArgumentContext>
 {
     @Override
     public ParseMode getParseMode() {
@@ -19,12 +20,12 @@ public class ColorArgument
     }
 
     @Override
-    public String dumpSimple(TextColor arg, AbstractExecutionContext context) {
+    public String dumpSimple(TextColor arg, DummyArgumentContext context) {
         return arg.asHexString();
     }
 
     @Override
-    public TextColor parseSimple(String arg, AbstractExecutionContext context) throws ParseError {
+    public TextColor parseSimple(String arg, DummyArgumentContext context) throws ParseError {
         NamedTextColor named = NamedTextColor.NAMES.value(arg.toLowerCase(Locale.ROOT));
         if (named != null) {
             return named;
@@ -38,7 +39,7 @@ public class ColorArgument
     }
 
     @Override
-    public List<TextColor> tapComplete(String fragment, AbstractExecutionContext context) {
+    public List<TextColor> tapComplete(String fragment, DummyArgumentContext context) {
         return List.of();
     }
 }

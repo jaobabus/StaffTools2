@@ -8,4 +8,10 @@ public class Commands {
 
     @Command
     public TestSchema testSchema;
+
+    @Command
+    public ChainCommand chain;
+
+    @Command
+    public LatestCommand latest;
 }
