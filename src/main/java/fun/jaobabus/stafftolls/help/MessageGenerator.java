@@ -2,7 +2,7 @@ package fun.jaobabus.stafftolls.help;
 
 import fun.jaobabus.commandlib.util.AbstractMessage;
 import fun.jaobabus.stafftolls.config.RootConfig;
-import fun.jaobabus.stafftolls.config.lib.mutable.ConfigValue;
+import fun.jaobabus.configlib.mutable.ConfigValue;
 import fun.jaobabus.stafftolls.message.MinecraftMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;

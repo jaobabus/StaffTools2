@@ -112,8 +112,9 @@ public class LatestCommand extends AbstractCommand.Parametrized<LatestCommand.Ar
                     if (Files.exists(destPath, LinkOption.NOFOLLOW_LINKS)) {
                         Files.delete(destPath);
                     }
-                    Files.createSymbolicLink(destPath, targetPath);
-                    results.add(destPath.getFileName() + " -> " + targetPath.getFileName());
+                    var link = destPath.getParent().relativize(targetPath);
+                    Files.createSymbolicLink(destPath, link);
+                    results.add(destPath.getFileName() + " -> " + link);
                 }
 
             } catch (Exception e) {

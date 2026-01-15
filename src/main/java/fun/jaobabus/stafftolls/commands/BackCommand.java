@@ -18,6 +18,8 @@ public class BackCommand extends AbstractCommand.Parametrized<BackCommand.Argume
 
     public static class Arguments {
         @Argument
+        @Argument.Phrase(phrase = "Position index")
+        @Argument.Help(help = "Tab complete contains indexes")
         public BackPositionArgument.Position pos;
     }
 

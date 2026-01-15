@@ -23,11 +23,6 @@ public class BackPositionArgument
     }
 
     @Override
-    public ParseMode getParseMode() {
-        return ParseMode.SpaceTerminated;
-    }
-
-    @Override
     public List<Position> tapComplete(String s, Context context) {
         var locations = context.ctx.playerContext.back.locations;
         return IntStream.range(0, locations.size())

@@ -18,6 +18,7 @@ public class FeedCommand extends AbstractCommand.Parametrized<FeedCommand.Argume
 
     public static class Arguments {
         @Argument(action = Argument.Action.Optional)
+        @Argument.Phrase(phrase = "Player to feed")
         public Player player;
     }
 

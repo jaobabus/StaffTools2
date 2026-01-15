@@ -1,7 +1,7 @@
 package fun.jaobabus.stafftolls.config;
 
-import fun.jaobabus.stafftolls.config.lib.Restricted;
-import fun.jaobabus.stafftolls.config.lib.mutable.ConfigValue;
+import fun.jaobabus.configlib.annotation.Restricted;
+import fun.jaobabus.configlib.mutable.ConfigValue;
 
 public class BackConfig
 {

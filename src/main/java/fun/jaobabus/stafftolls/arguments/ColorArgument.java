@@ -2,7 +2,6 @@ package fun.jaobabus.stafftolls.arguments;
 
 import fun.jaobabus.commandlib.argument.AbstractArgument;
 import fun.jaobabus.commandlib.context.DummyArgumentContext;
-import fun.jaobabus.commandlib.util.AbstractExecutionContext;
 import fun.jaobabus.commandlib.util.AbstractMessage;
 import fun.jaobabus.commandlib.util.ParseError;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -14,11 +13,6 @@ import java.util.Locale;
 public class ColorArgument
     extends AbstractArgument.Parametrized<TextColor, DummyArgumentContext>
 {
-    @Override
-    public ParseMode getParseMode() {
-        return ParseMode.SpaceTerminated;
-    }
-
     @Override
     public String dumpSimple(TextColor arg, DummyArgumentContext context) {
         return arg.asHexString();

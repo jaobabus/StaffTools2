@@ -2,9 +2,7 @@ package fun.jaobabus.stafftolls.arguments;
 
 import fun.jaobabus.commandlib.argument.AbstractArgument;
 import fun.jaobabus.commandlib.context.BaseArgumentContext;
-import fun.jaobabus.commandlib.context.DummyArgumentContext;
 import fun.jaobabus.commandlib.context.ExecutionContext;
-import fun.jaobabus.commandlib.util.AbstractExecutionContext;
 import fun.jaobabus.commandlib.util.AbstractMessage;
 import fun.jaobabus.commandlib.util.ParseError;
 import fun.jaobabus.stafftolls.context.CommandContext;
@@ -26,11 +24,6 @@ public class OnlinePlayerArgument
     }
 
     public OnlinePlayerArgument() {}
-
-    @Override
-    public ParseMode getParseMode() {
-        return ParseMode.SpaceTerminated;
-    }
 
     @Override
     public String dumpSimple(Player player, Context ctx) {

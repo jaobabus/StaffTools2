@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "fun.jaobabus"
-version = "1.2.A-SNAPSHOT"
+version = "1.2.4-SNAPSHOT"
 
 java {
     toolchain {
@@ -15,80 +15,82 @@ java {
 
 repositories {
     mavenCentral()
-    mavenLocal() // Используем локальный Maven-репозиторий
+    mavenLocal()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("https://maven.enginehub.org/repo/")
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://mvnrepository.com/artifact/net.md-5/bungeecord-api")
 }
 
 configurations.all {
-    resolutionStrategy.cacheChangingModulesFor(0, "seconds") // Отключаем кеширование версий
+    resolutionStrategy.cacheChangingModulesFor(0, "seconds")
 }
 
 dependencies {
-    // implementation("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT")
-    implementation("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-    implementation("net.kyori:adventure-api:4.14.0")
+    // implementation("org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT")
+    implementation("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    implementation("net.kyori:adventure-api:4.25.0")
+    implementation("net.kyori:adventure-key:4.25.0")
     implementation("net.kyori:examination-api:1.3.0")
 
     implementation("fun.jaobabus:commandlib:0.2.1-SNAPSHOT")
+    implementation("fun.jaobabus:configlib:0.1.1-SNAPSHOT")
 
-    // Дополнительные зависимости
     implementation("com.sk89q.worldguard:worldguard-bukkit:7.0.9") {
-        exclude (
+        exclude(
             group = "org.spigotmc",
             module = "spigot-api"
         )
     }
 
-    implementation("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT")
+    implementation("net.md-5:bungeecord-api:1.21-R0.4-SNAPSHOT")
 
     implementation("org.yaml:snakeyaml:2.4")
 
     implementation("com.google.guava:guava:32.1.2-jre")
-    implementation("com.google.code.gson:gson:2.7")
+    implementation("com.google.code.gson:gson:2.8.9")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.18.3")
 
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
-
 }
 
-var mainClass = "fun.jaobabus.stafftolls.main.Main";
+var mainClass = "fun.jaobabus.stafftolls.main.Main"
 
-// Шейдинг CommandLib внутрь плагина
-var shadowJarCli = tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJarCli") {
-    archiveClassifier.set("cli")
-    configurations = listOf(project.configurations.runtimeClasspath.get())
+var shadowJarCli =
+    tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJarCli") {
+        archiveClassifier.set("cli")
+        configurations = listOf(project.configurations.runtimeClasspath.get())
 
-    dependencies {
-        include(dependency("fun.jaobabus:commandlib:0.2.1-SNAPSHOT"))
-        include(dependency("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT"))
-        include(dependency("com.sk89q.worldguard:worldguard-bukkit:7.0.9"))
-        include(dependency("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"))
-        // include(dependency("org.spigotmc:spigot-api:1.21.4-R0.1-SNAPSHOT"))
-        include(dependency("com.google.guava:guava:32.1.2-jre"))
-        include(dependency("org.yaml:snakeyaml:2.4"))
-        include(dependency("net.kyori:adventure-api"))
-        include(dependency("com.google.code.gson:gson:2.7"))
-        include(dependency("net.kyori:examination-api:1.3.0"))
+        dependencies {
+            include(dependency("fun.jaobabus:commandlib:0.2.1-SNAPSHOT"))
+            include(dependency("fun.jaobabus:configlib:0.1.1-SNAPSHOT"))
+            include(dependency("com.fasterxml.jackson.core:jackson-core:2.18.3"))
+            include(dependency("net.md-5:bungeecord-api:1.21-R0.4-SNAPSHOT"))
+            include(dependency("com.sk89q.worldguard:worldguard-bukkit:7.0.9"))
+            include(dependency("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT"))
+            // include(dependency("org.spigotmc:spigot-api:1.21.11-R0.1-SNAPSHOT"))
+            include(dependency("com.google.guava:guava:32.1.2-jre"))
+            include(dependency("org.yaml:snakeyaml:2.4"))
+            include(dependency("net.kyori:adventure-api"))
+            include(dependency("net.kyori:adventure-key"))
+            include(dependency("com.google.code.gson:gson:2.8.9"))
+            include(dependency("net.kyori:examination-api:1.3.0"))
+        }
+
+        from(project.configurations.runtimeClasspath.get().filter {
+            it.name.contains("guava") || it.name.contains("gson")
+        })
+
+        from(sourceSets.main.get().output)
+
+        manifest {
+            attributes(
+                "Main-Class" to mainClass
+            )
+        }
     }
-
-    from(project.configurations.runtimeClasspath.get().filter {
-        it.name.contains("guava") || it.name.contains("gson")
-    })
-
-    from(sourceSets.main.get().output)
-
-    // relocate("org.bukkit", "fun.jaobabus.libs.bukkit")
-    // relocate("com.google.common", "fun.jaobabus.libs.guava")
-
-    manifest {
-        attributes(
-            "Main-Class" to mainClass
-        )
-    }
-}
 
 var configurePlugin = tasks.register<JavaExec>("configurePlugin") {
     dependsOn(shadowJarCli)
@@ -105,18 +107,21 @@ var configurePlugin = tasks.register<JavaExec>("configurePlugin") {
     isIgnoreExitValue = false
 }
 
-var shadowJarPlugin = tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJarPlugin") {
-    dependsOn(configurePlugin)
+var shadowJarPlugin =
+    tasks.register<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJarPlugin") {
+        dependsOn(configurePlugin)
 
-    archiveClassifier.set("plugin") // plugin.jar
-    configurations = listOf(project.configurations.runtimeClasspath.get())
+        archiveClassifier.set("plugin")
+        configurations = listOf(project.configurations.runtimeClasspath.get())
 
-    dependencies {
-        include(dependency("fun.jaobabus:commandlib:0.2.1-SNAPSHOT"))
+        dependencies {
+            include(dependency("fun.jaobabus:commandlib:0.2.1-SNAPSHOT"))
+            include(dependency("fun.jaobabus:configlib:0.1.1-SNAPSHOT"))
+            include(dependency("com.fasterxml.jackson.core:jackson-core:2.18.3"))
+        }
+
+        from(sourceSets.main.get().output)
     }
-
-    from(sourceSets.main.get().output)
-}
 
 var latestPlugin = tasks.register<JavaExec>("latestPlugin") {
     dependsOn(shadowJarCli)
@@ -138,7 +143,7 @@ tasks.build {
 
 publishing {
     publications {
-        val verIncrement = 0;
+        val verIncrement = 0
         create<MavenPublication>("mavenJava") {
             groupId = "fun.jaobabus"
             artifactId = "stafftools"

@@ -18,6 +18,7 @@ public class HealCommand extends AbstractCommand.Parametrized<HealCommand.Argume
 
     public static class Arguments {
         @Argument(action = Argument.Action.Optional)
+        @Argument.Phrase(phrase = "Player to give heal")
         public Player player;
     }
 

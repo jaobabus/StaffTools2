@@ -7,9 +7,6 @@ public class Commands {
     public GenerateYaml yaml;
 
     @Command
-    public TestSchema testSchema;
-
-    @Command
     public ChainCommand chain;
 
     @Command

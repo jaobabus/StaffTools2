@@ -17,6 +17,7 @@ public class NightVisionCommand extends AbstractCommand.Parametrized<NightVision
 
     public static class Arguments {
         @Argument(action = Argument.Action.Optional)
+        @Argument.Phrase(phrase = "Player to give night vision")
         public Player player;
     }
 

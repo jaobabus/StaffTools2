@@ -16,10 +16,12 @@ public class FlyCommand extends AbstractCommand.Parametrized<FlyCommand.Argument
 
     public static class Arguments {
         @Argument(action = Argument.Action.Optional)
+        @Argument.Phrase(phrase = "Player to give fly")
         public Player player;
 
         @Argument(action = Argument.Action.Optional)
         @ArgumentRestriction(restriction = "StringRange enable disable")
+        @Argument.Phrase(phrase = "State of fly mode")
         public String state;
     }
 

@@ -8,6 +8,8 @@ import fun.jaobabus.commandlib.argument.restrictions.StringRange;
 import fun.jaobabus.stafftolls.arguments.restrictions.FloatRange;
 import fun.jaobabus.stafftolls.arguments.restrictions.IntRange;
 import fun.jaobabus.stafftolls.arguments.restrictions.Permission;
+import fun.jaobabus.stafftolls.commands.SetWarpCommand;
+import fun.jaobabus.stafftolls.commands.WarpCommand;
 
 
 public class STRegistry
@@ -19,9 +21,10 @@ public class STRegistry
             argumentsRegistry.include(DefaultArguments.getDefaultArgumentsRegistry());
             argumentsRegistry.putArgument(new BackPositionArgument());
             argumentsRegistry.putArgument(new OnlinePlayerArgument());
-            argumentsRegistry.putArgument(new ConfigEntryPath());
-            argumentsRegistry.putArgument(new ConfigEntryBinding());
             argumentsRegistry.putArgument(new ColorArgument());
+            argumentsRegistry.putArgument(new WarpCommand.WarpName());
+            argumentsRegistry.putArgument(new SetWarpCommand.UnusedWarpName());
+            argumentsRegistry.putArgument(new LocationArgument());
         }
         return argumentsRegistry;
     }

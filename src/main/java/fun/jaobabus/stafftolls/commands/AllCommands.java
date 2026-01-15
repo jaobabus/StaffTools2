@@ -54,4 +54,24 @@ public class AllCommands {
     @Command.Phrase(phrase = "Configure plugin config")
     @ArgumentRestriction(restriction = "Permission stafftools.stconfig")
     public ConfigCommand stconfig;
+
+    @Command
+    @Command.Phrase(phrase = "Teleport to warp")
+    @ArgumentRestriction(restriction = "Permission stafftools.swarp")
+    public WarpCommand swarp;
+
+    @Command
+    @Command.Phrase(phrase = "Add warp")
+    @ArgumentRestriction(restriction = "Permission stafftools.ssetwarp")
+    public SetWarpCommand ssetwarp;
+
+    @Command
+    @Command.Phrase(phrase = "Delete warp")
+    @ArgumentRestriction(restriction = "Permission stafftools.sdelwarp")
+    public DelWarpCommand sdelwarp;
+
+    @Command
+    @Command.Phrase(phrase = "List warps")
+    @ArgumentRestriction(restriction = "Permission stafftools.slistwarp")
+    public ListWarpsCommand slistwarp;
 }

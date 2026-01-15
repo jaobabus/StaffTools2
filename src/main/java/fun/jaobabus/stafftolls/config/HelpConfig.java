@@ -1,7 +1,7 @@
 package fun.jaobabus.stafftolls.config;
 
-import fun.jaobabus.stafftolls.config.lib.DefaultValue;
-import fun.jaobabus.stafftolls.config.lib.mutable.ConfigValue;
+import fun.jaobabus.configlib.annotation.DefaultValue;
+import fun.jaobabus.configlib.mutable.ConfigValue;
 import net.kyori.adventure.text.format.TextColor;
 
 public class HelpConfig {

@@ -19,14 +19,19 @@ public class SpeedCommand extends AbstractCommand.Parametrized<SpeedCommand.Argu
     {
         @Argument(action = Argument.Action.Optional,
                   defaultValue = "1")
+        @Argument.Phrase(phrase = "Movement speed")
+        @Argument.Help(help = "Attribute movement speed (from -10 to 10)")
+        @ArgumentRestriction(restriction = "FloatRange -10 10")
         public Double speed;
 
         @Argument(action = Argument.Action.Optional)
+        @Argument.Phrase(phrase = "Target player")
         public Player player;
 
         @Argument(action = Argument.Action.Optional,
                   defaultValue = "auto")
         @ArgumentRestriction(restriction = "StringRange auto fly walk")
+        @Argument.Phrase(phrase = "Mode to apply speed")
         public String mode;
     }
 

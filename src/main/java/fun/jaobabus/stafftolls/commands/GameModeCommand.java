@@ -22,14 +22,16 @@ public class GameModeCommand extends AbstractCommand.Parametrized<GameModeComman
         BY_ID.put(3, GameMode.SPECTATOR);
     }
 
-    private static Map<Integer, GameMode> BY_ID = new HashMap<>();
+    private static final Map<Integer, GameMode> BY_ID = new HashMap<>();
 
     public static class Arguments {
         @Argument
         @ArgumentRestriction(restriction = "IntRange 0 3")
+        @Argument.Phrase(phrase = "Legacy game mode value")
         public Long mode;
 
         @Argument(action = Argument.Action.Optional)
+        @Argument.Phrase(phrase = "Player to set game mode")
         public Player player;
     }
 
